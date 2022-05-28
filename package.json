@@ -1,6 +1,6 @@
 {
   "name": "mega-lo-mania",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "source": "src/index.html",
   "browserslist": "> 0.5%, last 2 versions, not dead",
@@ -9,7 +9,7 @@
     "clean": "gts clean",
     "fix": "gts fix",
     "start": "npm run clean && parcel",
-    "build": "npm run clean && parcel build"
+    "build": "npm run lint && npm run clean && parcel build"
   },
   "author": "",
   "license": "ISC",
