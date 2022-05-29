@@ -4,14 +4,16 @@ import {Player} from '../models/players.type';
 import {MapCellState} from './mapcell-states/base-state';
 import {Neutral} from './mapcell-states/neutral';
 import {Owned} from './mapcell-states/owned';
+import {War} from './mapcell-states/war';
 
-type Armies = {[P in Player]?: IArmy};
+type Armies = {[P in Player]: IArmy | null};
 
 export class MapCell {
   private state!: MapCellState;
 
   // armies
   public army: Armies;
+  public armiesPresent: Player[];
 
   // exterior
   public owner: Player | null;
@@ -26,7 +28,7 @@ export class MapCell {
 
   constructor(
     owner: Player | null = null,
-    startingArmy: Armies = {},
+    startingArmy: Armies = {red: null, blue: null},
     towerPresent = false,
     towerPop = 0
   ) {
@@ -35,6 +37,7 @@ export class MapCell {
     this.transitionTo(this.state);
 
     this.army = startingArmy;
+    this.armiesPresent = [];
 
     this.towerBuildingProgress = this.owner ? 100 : 0;
 
@@ -49,25 +52,39 @@ export class MapCell {
   }
 
   public resolvePopulationGrowth(progress: number): void {
-    this.state.handlePopulationGrowth(this.percentageOfASecondPassed(progress));
+    this.state.handlePopulationGrowth(progress);
   }
 
   public resolveStandingArmy(progress: number): void {
-    this.state.handleStandingArmy(this.percentageOfASecondPassed(progress));
+    this.armiesPresent = this.getArmiesPresent(this.army);
+
+    if (this.armiesPresent.length > 1) {
+      this.transitionTo(new War());
+    }
+
+    this.state.handleStandingArmy(progress);
   }
 
-  private percentageOfASecondPassed = (progress: number): number =>
-    progress / 1000;
+  public armySize = (army: IArmy | null): number | null => {
+    if (army === null) {
+      return null;
+    }
 
-  private buildTower = (
-    builders: number,
-    percentageBuilt: number,
-    percentageOfASecondPassed: number
-  ): number =>
-    percentageBuilt +
-    builders * GAME_CONFIG.buildingTempo * percentageOfASecondPassed;
+    const SUM = army.rock * GAME_CONFIG.unitWeights.rock;
+    return SUM > 0 ? SUM : null;
+  };
+
+  private getArmiesPresent = (armies: Armies): Player[] => {
+    const PRESENT: Player[] = [];
+
+    Object.values(Player).forEach(key => {
+      if (this.armySize(armies[key]) !== null) {
+        PRESENT.push(key);
+      }
+    });
+
+    return PRESENT;
+  };
 
   private isOwned = (): boolean => (this.owner ? true : false);
-  private thereIsConflict = (): boolean =>
-    Object.keys(this.army).length > 1 ? true : false;
 }

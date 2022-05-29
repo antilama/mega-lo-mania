@@ -35,8 +35,8 @@ export class Minimap {
     map.forEach((cell, i) => {
       const CELL = document.getElementById(`minimap-${i}`);
       if (CELL) {
-        CELL.textContent = `Army (${cell.army.red?.rock}, ${
-          cell.army.blue?.rock
+        CELL.textContent = `Army (${cell.army.red}, ${
+          cell.army.blue
         }). Owned by ${
           cell.owner ? cell.owner : Math.floor(cell.towerBuildingProgress)
         }. Tower Pop ${cell.towerScreenPop}. State ${

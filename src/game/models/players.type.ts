@@ -1,4 +1,4 @@
 export enum Player {
-  'red' = 'red',
-  'blue' = 'blue',
+  'RED' = 'red',
+  'BLUE' = 'blue',
 }
