@@ -1,19 +1,24 @@
 import {GAME_CONFIG} from '../configuration/globalVars';
 import {IArmy} from '../models/army.interface';
 import {Player} from '../models/players.type';
+import {MapCellState} from './mapcell-states/base-state';
+import {Neutral} from './mapcell-states/neutral';
+import {Owned} from './mapcell-states/owned';
 
-type Armies = Record<Player, IArmy>;
+type Armies = {[P in Player]?: IArmy};
 
 export class MapCell {
-  // exterior
-  public army: Armies;
-  public owner: Player | null;
+  private state!: MapCellState;
 
-  // exterior buildings
-  public tower: boolean;
+  // armies
+  public army: Armies;
+
+  // exterior
+  public owner: Player | null;
+  public towerBuildingProgress: number;
+  private builder: Player | null = null;
 
   // resources
-  // TODO
 
   // tower interior
   public towerScreenPop: number; // integer - on screen val
@@ -21,56 +26,48 @@ export class MapCell {
 
   constructor(
     owner: Player | null = null,
-    startingArmy: Armies = {red: {rock: 0}, blue: {rock: 0}},
+    startingArmy: Armies = {},
     towerPresent = false,
     towerPop = 0
   ) {
-    this.army = startingArmy;
     this.owner = owner ? owner : null;
+    this.state = owner ? new Owned() : new Neutral();
+    this.transitionTo(this.state);
 
-    this.tower = towerPresent && owner ? towerPresent : false;
+    this.army = startingArmy;
+
+    this.towerBuildingProgress = this.owner ? 100 : 0;
 
     this.towerRealPop = towerPresent && towerPop ? towerPop : 0;
-    this.towerScreenPop = this.calculateScreenTowerPop(this.towerRealPop);
+    this.towerScreenPop = this.towerRealPop;
   }
 
-  public growTowerPop(progress: number): void {
-    if (!this.tower) {
-      return;
-    }
-
-    if (this.towerScreenPop >= 2 && this.towerScreenPop < 100) {
-      const growth = this.calculateGrowthRate(
-        (this.towerScreenPop - (this.towerScreenPop % 2)) / 2,
-        progress / 1000
-      );
-
-      // increment pop
-      this.towerRealPop +=
-        growth < GAME_CONFIG.minGrowthTempo
-          ? GAME_CONFIG.minGrowthTempo
-          : growth;
-
-      this.towerScreenPop = this.calculateScreenTowerPop(this.towerRealPop);
-    }
+  public transitionTo(state: MapCellState): void {
+    console.log(`Context: Transition to ${(<any>state).constructor.name}.`);
+    this.state = state;
+    this.state.setContext(this);
   }
 
-  public resolveStandingArmies(): void {}
-
-  private buildTower(): void {}
-
-  private fight(armies: Armies): Armies {
-    return armies;
+  public resolvePopulationGrowth(progress: number): void {
+    this.state.handlePopulationGrowth(this.percentageOfASecondPassed(progress));
   }
 
-  private calculateScreenTowerPop = (pop: number): number =>
-    pop >= 100 ? 100 : Math.floor(pop);
+  public resolveStandingArmy(progress: number): void {
+    this.state.handleStandingArmy(this.percentageOfASecondPassed(progress));
+  }
 
-  private calculateGrowthRate = (
-    pairsInPopulation: number,
+  private percentageOfASecondPassed = (progress: number): number =>
+    progress / 1000;
+
+  private buildTower = (
+    builders: number,
+    percentageBuilt: number,
     percentageOfASecondPassed: number
   ): number =>
-    pairsInPopulation *
-    GAME_CONFIG.growthTempoPerSecond *
-    percentageOfASecondPassed;
+    percentageBuilt +
+    builders * GAME_CONFIG.buildingTempo * percentageOfASecondPassed;
+
+  private isOwned = (): boolean => (this.owner ? true : false);
+  private thereIsConflict = (): boolean =>
+    Object.keys(this.army).length > 1 ? true : false;
 }

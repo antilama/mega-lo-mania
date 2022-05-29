@@ -1,4 +1,3 @@
-import {Observable, Subject} from 'rxjs';
 import {Map} from './models/map.type';
 
 export class GameState {
@@ -20,7 +19,8 @@ export class GameState {
     const updatedMap: Map = [];
 
     this.map.map(cell => {
-      cell.growTowerPop(progress);
+      cell.resolvePopulationGrowth(progress);
+      cell.resolveStandingArmy(progress);
 
       updatedMap.push(cell);
     });

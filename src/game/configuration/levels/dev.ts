@@ -17,4 +17,5 @@ export const MAP_DEV: Map = [
   new MapCell(),
   new MapCell(),
   new MapCell(),
+  new MapCell(),
 ];
