@@ -32,7 +32,7 @@ function draw() {
 }
 
 function loop(timestamp: number) {
-  const progress = timestamp - lastRender;
+  const progress = (timestamp - lastRender) / 1000;
 
   setTimeout(() => {
     update(progress);
