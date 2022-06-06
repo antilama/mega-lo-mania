@@ -1,0 +1,23 @@
+@use './variables' as variables;
+
+#minimap-grid {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  background-color: #5e5c35;
+  padding: 10px;
+
+  & .minimap-cell {
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    padding: 20px;
+
+    text-align: center;
+    cursor: pointer;
+  }
+
+  @each $name, $color in variables.$playerColors {
+    .minimap-owner-#{$name} {
+      background-color: $color;
+    }
+  }
+}
