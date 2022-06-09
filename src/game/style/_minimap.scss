@@ -1,23 +1,49 @@
 @use './variables' as variables;
 
 #minimap-grid {
+  width: 300px;
+  height: 300px;
+
   display: grid;
+  user-select: none;
   grid-template-columns: auto auto auto auto;
   background-color: #5e5c35;
   padding: 10px;
 
   & .minimap-cell {
+    position: relative;
     background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid rgba(0, 0, 0, 0.8);
-    padding: 20px;
 
     text-align: center;
     cursor: pointer;
-  }
 
-  @each $name, $color in variables.$playerColors {
-    .minimap-owner-#{$name} {
-      background-color: $color;
+    div.tower {
+      display: flex;
+      position: absolute;
+      width: 40%;
+      height: 40%;
+
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+
+      color: white;
+
+      align-content: center;
+      justify-content: center;
+      flex-direction: column;
     }
+
+    p {
+      position: absolute;
+      margin: 0;
+    }
+  }
+}
+
+@each $name, $color in variables.$playerColors {
+  .minimap-owner-#{$name} .tower {
+    background-color: $color;
   }
 }

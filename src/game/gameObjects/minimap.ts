@@ -20,23 +20,33 @@ export class Minimap {
 
   drawMinimap(map: Map): void {
     if (this.isFirstDraw) {
-      this.firstDraw(map);
+      this.initialDraw(map);
     }
 
     map.forEach((cell, i) => {
       const CELL = document.getElementById(`minimap-${i}`);
+      const TOWER = document.querySelector(`#minimap-${i} .tower`);
+
+      const P = document.querySelector(`#minimap-${i} p`);
 
       if (CELL) {
         this.drawOwner(map[i], this.prevMapFrame[i], CELL);
 
         // DEBUG
-        // CELL.textContent = `Army (${cell.army.red}, ${
-        //   cell.army.blue
-        // }). Owned by ${
         //   cell.owner ? cell.owner : Math.floor(cell.towerBuildingProgress)
         // }. Tower Pop ${cell.towerScreenPop}. State ${
         //   (<any>cell.state).constructor.name
         // }`;
+      }
+
+      if (P) {
+        P.textContent = `${cell.army.red?.rock ? cell.army.red.rock : ''} ${
+          cell.army.blue?.rock ? ',' + cell.army.blue.rock : ''
+        }`;
+      }
+
+      if (TOWER) {
+        TOWER.textContent = cell.owner ? `${cell.towerScreenPop}` : '';
       }
     });
 
@@ -44,7 +54,7 @@ export class Minimap {
     this.prevMapFrame = map;
   }
 
-  private firstDraw(map: Map) {
+  private initialDraw(map: Map) {
     this.isFirstDraw = false;
 
     const GRID = document.createElement('div');

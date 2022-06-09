@@ -37,9 +37,6 @@ export class Neutral extends MapCellState {
     return this.context.armySize(this.context.army[player]);
   }
 
-  private buildTower = (
-    builders: number,
-
-    secondPercent: number
-  ): number => builders * GAME_CONFIG.buildingTempo * secondPercent;
+  private buildTower = (builders: number, secondPercent: number): number =>
+    builders * GAME_CONFIG.buildingTempo * secondPercent;
 }
