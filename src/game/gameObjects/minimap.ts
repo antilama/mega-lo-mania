@@ -24,29 +24,19 @@ export class Minimap {
     }
 
     map.forEach((cell, i) => {
+      const PREV_FRAME_CELL = this.prevMapFrame[i];
+
       const CELL = document.getElementById(`minimap-${i}`);
       const TOWER = document.querySelector(`#minimap-${i} .tower`);
 
-      const P = document.querySelector(`#minimap-${i} p`);
-
       if (CELL) {
-        this.drawOwner(map[i], this.prevMapFrame[i], CELL);
+        this.drawOwner(cell, PREV_FRAME_CELL, CELL);
 
-        // DEBUG
-        //   cell.owner ? cell.owner : Math.floor(cell.towerBuildingProgress)
-        // }. Tower Pop ${cell.towerScreenPop}. State ${
-        //   (<any>cell.state).constructor.name
-        // }`;
-      }
-
-      if (P) {
-        P.textContent = `${cell.army.red?.rock ? cell.army.red.rock : ''} ${
-          cell.army.blue?.rock ? ',' + cell.army.blue.rock : ''
-        }`;
+        this.drawArmy(cell.armiesPresent, PREV_FRAME_CELL.armiesPresent, CELL);
       }
 
       if (TOWER) {
-        TOWER.textContent = cell.owner ? `${cell.towerScreenPop}` : '';
+        TOWER.textContent = `${cell.towerScreenPop}`;
       }
     });
 
@@ -63,17 +53,24 @@ export class Minimap {
     document.body.appendChild(GRID);
 
     map.forEach((cell, i) => {
-      const TOWER = document.createElement('div');
-      TOWER.className = 'tower';
-
-      const CELL_BODY = document.createElement('div');
-      CELL_BODY.className = 'minimap-cell';
-      CELL_BODY.id = `minimap-${i}`;
-
-      CELL_BODY.appendChild(TOWER);
-      CELL_BODY.appendChild(document.createElement('p'));
-
+      const CELL_BODY = this.createCellBody(i);
       GRID.appendChild(CELL_BODY);
+    });
+  }
+
+  private drawArmy(
+    presentArmies: Player[],
+    prevPresentArmies: Player[],
+    cell: HTMLElement
+  ) {
+    if (presentArmies.toString() === prevPresentArmies.toString()) {
+      return;
+    }
+
+    this.removeAllArmies(cell);
+
+    presentArmies.forEach(army_color => {
+      this.createArmy(cell, army_color);
     });
   }
 
@@ -86,16 +83,56 @@ export class Minimap {
       return;
     }
 
+    // add owner graphics
+    if (cellData.owner !== null) {
+      cell.classList.add(`minimap-owner-${cellData.owner}`);
+      this.createTower(cell);
+      return;
+    }
+
     // clear owner graphics
     if (cellData.owner === null) {
       Object.values(Player).map(player => {
         cell.classList.remove(`minimap-owner-${player}`);
       });
-    }
 
-    // add owner graphics
-    if (cellData.owner !== null) {
-      cell.classList.add(`minimap-owner-${cellData.owner}`);
+      this.removeTower(cell);
     }
+  }
+
+  createCellBody(cellID: number): HTMLElement {
+    const CELL_BODY = document.createElement('div');
+    CELL_BODY.className = 'minimap-cell';
+    CELL_BODY.id = `minimap-${cellID}`;
+
+    return CELL_BODY;
+  }
+
+  createTower(cell: HTMLElement): void {
+    const TOWER = document.createElement('div');
+    TOWER.className = 'tower';
+
+    cell.appendChild(TOWER);
+  }
+
+  removeTower(cell: HTMLElement): void {
+    const TOWER = cell.querySelectorAll('.tower');
+    TOWER.forEach(tower => {
+      cell.removeChild(tower);
+    });
+  }
+
+  createArmy(cell: HTMLElement, color: Player): void {
+    const ARMY = document.createElement('div');
+    ARMY.className = `${color} army`;
+
+    cell.appendChild(ARMY);
+  }
+
+  removeAllArmies(cell: HTMLElement): void {
+    const ARMY = cell.querySelectorAll('.army');
+    ARMY.forEach(army => {
+      cell.removeChild(army);
+    });
   }
 }
