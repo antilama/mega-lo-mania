@@ -1,0 +1,9 @@
+@use 'sass:map';
+@use './variables' as variables;
+
+@mixin army($color) {
+  position: absolute;
+  background-color: map.get(variables.$playerColors, $color);
+  min-width: 15%;
+  min-height: 15%;
+}

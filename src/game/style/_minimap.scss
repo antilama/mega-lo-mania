@@ -1,4 +1,6 @@
+@use 'sass:map';
 @use './variables' as variables;
+@use './mixins' as mixins;
 
 #minimap-grid {
   width: 300px;
@@ -43,9 +45,27 @@
       flex-direction: column;
     }
 
-    p {
-      position: absolute;
-      margin: 0;
+    & .army {
+      &.red {
+        @include mixins.army('red');
+        left: 5%;
+        top: 5%;
+      }
+      &.blue {
+        @include mixins.army('blue');
+        right: 5%;
+        bottom: 5%;
+      }
+      &.green {
+        @include mixins.army('green');
+        left: 5%;
+        bottom: 5%;
+      }
+      &.yellow {
+        @include mixins.army('yellow');
+        right: 5%;
+        top: 5%;
+      }
     }
   }
 }
