@@ -5,7 +5,7 @@ import {Hand} from './game/gameObjects/hand';
 import {Minimap} from './game/gameObjects/minimap';
 
 // gameVars
-let lastRender = 0;
+let lastRender = 0; // last frame time in ms
 
 // gameObjects
 const GAME_STATE = GameState.getInstance();

@@ -10,6 +10,7 @@ type Armies = {[P in Player]: IArmy | null};
 
 export class MapCell {
   private state!: MapCellState;
+  public selected = false;
 
   // armies
   public army: Armies;
@@ -49,6 +50,14 @@ export class MapCell {
     console.log(`Context: Transition to ${(<any>state).constructor.name}.`);
     this.state = state;
     this.state.setContext(this);
+  }
+
+  public select(): void {
+    this.selected = true;
+  }
+
+  public deselect(): void {
+    this.selected = false;
   }
 
   public resolvePopulationGrowth(progress: number): void {

@@ -18,6 +18,14 @@
     text-align: center;
     cursor: pointer;
 
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    &.selected {
+      border: 2px solid white;
+    }
+
     div.tower {
       display: flex;
       position: absolute;
