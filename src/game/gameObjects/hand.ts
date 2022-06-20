@@ -10,7 +10,7 @@ export class Hand {
     this.counter = document.createElement('div');
     this.counter.id = 'hand-counter';
 
-    document.getElementsByTagName('body')[0].appendChild(this.counter);
+    // document.getElementsByTagName('body')[0].appendChild(this.counter);
   }
 
   public static getInstance(): Hand {

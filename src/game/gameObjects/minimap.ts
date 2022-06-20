@@ -3,20 +3,25 @@ import {MAP_EMPTY} from '../configuration/levels/empty';
 import {GameState} from '../game-state';
 import {Map} from '../models/map.type';
 import {Player} from '../models/players.type';
+import {BattleScreen} from './battle';
 
 export class Minimap {
   private static instance: Minimap;
   private prevMapFrame = MAP_EMPTY;
   private isFirstDraw = true;
+  private parentElemId: string;
   private GAME_STATE: GameState;
+  private BATTLE_SCREEN: BattleScreen;
 
-  private constructor() {
+  private constructor(parentId: string) {
+    this.parentElemId = parentId;
     this.GAME_STATE = GameState.getInstance();
+    this.BATTLE_SCREEN = BattleScreen.getInstance();
   }
 
-  public static getInstance(): Minimap {
+  public static getInstance(parentId = 'left-panel'): Minimap {
     if (!Minimap.instance) {
-      Minimap.instance = new Minimap();
+      Minimap.instance = new Minimap(parentId);
     }
 
     return Minimap.instance;
@@ -53,7 +58,7 @@ export class Minimap {
     const GRID = document.createElement('div');
     GRID.id = 'minimap-grid';
 
-    document.body.appendChild(GRID);
+    document.getElementById(this.parentElemId)?.appendChild(GRID);
 
     map.forEach((cell, i) => {
       const CELL_BODY = this.createCellBody(cell, i);
@@ -134,6 +139,8 @@ export class Minimap {
 
   private selectCell(cellID: number): void {
     this.GAME_STATE.setActiveCell(cellID);
+    this.BATTLE_SCREEN.drawBattleScreen(cellID);
+
     this.drawSelection(
       this.GAME_STATE.activeCell(),
       this.GAME_STATE.previouslyActiveCell()

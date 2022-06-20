@@ -1,0 +1,19 @@
+#game-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  min-height: 100vh;
+}
+
+#left-panel {
+  background-color: rgb(31, 28, 24);
+
+  flex-grow: 1;
+}
+
+#game-viewport {
+  background-color: rgb(8, 8, 12);
+
+  flex-grow: 3;
+}

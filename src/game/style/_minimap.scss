@@ -3,8 +3,10 @@
 @use './mixins' as mixins;
 
 #minimap-grid {
-  width: 300px;
-  height: 300px;
+  max-width: 300px;
+  min-height: 300px;
+
+  margin: 0 auto;
 
   display: grid;
   user-select: none;
